@@ -16,6 +16,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing or empty prompt" });
   }
 
+  const MAX_INPUT_LENGTH = 8000;
+  if (prompt.length > MAX_INPUT_LENGTH) {
+    return res.status(400).json({
+      error: `Input too long (${prompt.length} chars). Maximum is ${MAX_INPUT_LENGTH} characters to prevent excessive API costs.`
+    });
+  }
+
   const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
   const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 
@@ -104,7 +111,7 @@ JSON schema:
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-3-5-sonnet-20241022",
           max_tokens: 1200,
           system,
           messages: [{ role: "user", content: userMsg }],
